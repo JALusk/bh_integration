@@ -1,5 +1,5 @@
-import bh_integration.constants as constants
 import math
+import bh_integration.constants as constants
 
 def planck_function(wavelength, temperature):
 
