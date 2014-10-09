@@ -1,11 +1,13 @@
-import math
-import bh_integration.constants as constants
+import numpy as np
+from astropy import constants as const
+from astropy import units as u
 
 def planck_function(wavelength, temperature):
 
-    C1 = 2.0 * constants.h * constants.c**2
-    C2 = constants.h * constants.c / constants.k
+    C1 = 2.0 * const.h.cgs * const.c.cgs**2
+    C2 = const.h.cgs * const.c.cgs / const.k_B.cgs
 
-    B_lambda = (C1 / wavelength**5)/(math.exp(C2 / (wavelength * temperature)) - 1)
-    
+    B_lambda = (C1 / wavelength**5)/(np.exp(C2 / (wavelength * temperature)) - 1) / u.sr
+    B_lambda = B_lambda.to(u.erg / (u.s * u.cm**2 * u.AA * u.sr))
+
     return B_lambda
