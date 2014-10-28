@@ -43,9 +43,12 @@ def mag2flux(filter_band, magnitude):
         magnitude: FloatTypea - Apparent magnitude in the filter band.
 
     Returns:
-        flux: An astropy quantity in erg/s/cm^2/A.
+        a tuple of two astropy quantities, the flux in erg/s/cm^2/A. and
+        the effective wavelength of the filter in Angstrom
+
+        (flux, effective_wl)
     """
     effective_wl, flux_at_zero_mag = get_filter_parameters(filter_band)
     flux = flux_at_zero_mag * 10**(-0.4 * magnitude)
 
-    return flux
+    return flux, effective_wl
