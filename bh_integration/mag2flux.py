@@ -40,7 +40,7 @@ def mag2flux(filter_band, magnitude):
 
     Args:
         filter_band: StringType - Name of the filter band (ex: 'U').
-        magnitude: FloatTypea - Apparent magnitude in the filter band.
+        magnitude: FloatType - Apparent magnitude in the filter band.
 
     Returns:
         a tuple of two astropy quantities, the flux in erg/s/cm^2/A. and
