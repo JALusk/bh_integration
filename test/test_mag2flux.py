@@ -31,9 +31,9 @@ class TestMagnitudeToFluxConversion(unittest.TestCase):
     def test_flux_at_mag_zero(self):
         mag = 0.0
         expected = self.flux_at_zero_mag
-        result = mag2flux(self.filter_band, 0.0)
+        result_flux, result_wl = mag2flux(self.filter_band, 0.0)
         
-        self.assertEqual(expected.value, result.value)
+        self.assertEqual(expected.value, result_flux.value)
 
     def test_get_filter_parameters_bad_filter_name(self):
         self.assertRaises(KeyError, get_filter_parameters, 'u')
