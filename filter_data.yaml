@@ -1,0 +1,21 @@
+# Filter data from Bessel et. al. 1998
+# http://adsabs.harvard.edu/abs/1998A%26A...333..231B
+
+U:
+    effective_wl: 3660.0
+    flux_at_zero_mag: 4.175E-9
+B:
+    effective_wl: 4380.0
+    flux_at_zero_mag: 6.32E-9
+
+V:
+    effective_wl: 5450.0
+    flux_at_zero_mag: 3.631E-9
+
+R:
+    effective_wl: 6410.0
+    flux_at_zero_mag: 2.177E-9
+
+I:
+    effective_wl: 7980.0
+    flux_at_zero_mag: 1.126E-9
