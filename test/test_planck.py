@@ -12,6 +12,16 @@ class TestPlanckFunctionExtrema(unittest.TestCase):
         self.C1 = 2.0 * const.h.cgs * const.c.cgs**2
         self.C2 = const.h.cgs * const.c.cgs / const.k_B.cgs
 
+    def test_planck_function_expected_value(self):
+        wavelength = 5000 * u.Angstrom
+        expected = (self.C1 / wavelength**5) / \
+               (np.exp(self.C2 / (wavelength * self.temperature)) - 1) / u.sr
+        expected = expected.to(u.erg / (u.s * u.cm**2 * u.AA * u.sr))
+        result = planck_function(wavelength, self.temperature)
+
+        self.assertAlmostEqual(expected.value, result.value)
+
+
     def test_rayleigh_jeans_law_long_wavelength(self):
         # The Planck function should be within 1% of the Rayleigh-Jeans
         # approximation for lambda * T > 7.7E9 angstrom * K

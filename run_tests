@@ -14,7 +14,7 @@ if [ ! -d "${SPEC_DIRECTORY}" ]; then
 fi
 
 if [ "$#" -eq 1 ]; then
-  python -m $1 unittest discover test
+  python -m $1 unittest discover -v test
 else
-  python -m unittest discover test
+  python -m unittest discover -v test
 fi
