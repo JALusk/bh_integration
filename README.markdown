@@ -35,3 +35,20 @@ This is done based on the behavior of the SED of supernova atmosphere models.
 In order to determine the reliability of these UV corrections, the authors compare them to the atmosphere models of Eastman et. al. (1996) and Dessart & Hillier (2005).
 Those models show that the UV correction at very early times is higher than that calculated from the method described above.
 They use the $$F_{UV}$$ from the atmosphere models when the $$B-V$$ color of the supernova is $$< -0.04$$.
+
+### Current Status
+
+Tests passing.
+
+All the major pieces of the code (save for those noted in the ToDo section) are written and are passing code tests.
+
+There are two functions which return the blackbody flux. This is because the integration functions that I am using don't play nice with astropy quantities. To save the headache of maintaining two copes of the same function, bb_flux() returns the astropy quantity, and bb_flux_nounits() is a dummy wrapper function that just calls bb_flux() and then strips off the units, returning a float. 
+I chose to handle the problem in this way so that there is only one function that truly calculates the blackbody flux, thus making testing easier and lessening the possibility that bugs get introduced that affect one flux calculation and not the other.
+This is the function called by the scipy.integrate.quad() routine during the calculation of the IR and UV flux corrections.
+
+### ToDo:
+
+    1) De-reddening routine
+    2) Logic that picks which UV correction to use based on whether or not U lies below the BB fit
+    3) Docstrings for all functions
+
