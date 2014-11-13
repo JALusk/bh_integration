@@ -1,4 +1,5 @@
 ## Description
+v0.1
 
 This code attempts to implement the photometric integration scheme of [Bersten & Hamuy (2009)](http://iopscience.iop.org/0004-637X/701/1/200).
 
