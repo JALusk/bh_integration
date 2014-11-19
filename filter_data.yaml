@@ -4,18 +4,23 @@
 U:
     effective_wl: 3660.0
     flux_at_zero_mag: 4.175E-9
+    mean_extinction: 1.569
 B:
     effective_wl: 4380.0
     flux_at_zero_mag: 6.32E-9
+    mean_extinction: 1.337
 
 V:
     effective_wl: 5450.0
     flux_at_zero_mag: 3.631E-9
+    mean_extinction: 1.000
 
 R:
     effective_wl: 6410.0
     flux_at_zero_mag: 2.177E-9
+    mean_extinction: 0.751
 
 I:
     effective_wl: 7980.0
     flux_at_zero_mag: 1.126E-9
+    mean_extinction: 0.479

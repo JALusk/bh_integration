@@ -8,6 +8,24 @@ from yaml import load
 stream = file('filter_data.yaml', 'r')
 filter_data = load(stream)
 
+class TestGetFilterMeanExtinction(unittest.TestCase):
+    
+    def setUp(self):
+        self.filter_band = "U"
+        self.av = 0.435
+
+    def test_get_filter_mean_extinction_returns_correct_extinction(self):
+        expected = filter_data[self.filter_band]['mean_extinction']
+        result = get_filter_mean_extinction(self.filter_band)
+
+        self.assertEqual(expected, result)
+
+    def test_get_filter_mean_extinction_bad_filter_name(self):
+        self.assertRaises(KeyError, get_filter_mean_extinction, 'u')
+
+    def test_get_filter_mean_extinction_bad_argument_int(self):
+        self.assertRaises(TypeError, get_filter_mean_extinction, 12)
+
 class TestGetFilterParameters(unittest.TestCase):
 
     def setUp(self):

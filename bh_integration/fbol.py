@@ -5,6 +5,16 @@ from bh_integration.mag2flux import *
 from bh_integration.fqbol import integrate_fqbol
 from bh_integration.fit_blackbody import *
 
+def ccm89_deredden_magnitudes(key, magnitudes, av):
+    mags_dereddened = np.array([])
+    
+    for i, filter_band in enumerate(key):
+        filter_mean_extinction = get_filter_mean_extinction(filter_band)
+        dereddened_mag = magnitudes[i] - av * filter_mean_extinction
+        mags_dereddened = np.append(mags_dereddened, dereddened_mag)
+
+    return mags_dereddened
+
 def build_flux_wl_array(key, magnitudes):
     fluxes = np.array([])
     wavelengths = np.array([])
@@ -35,8 +45,9 @@ def uv_correction_linear(shortest_wl, shortest_flux):
     uv_correction = np.trapz(fluxes, wavelengths)
     return uv_correction
 
-def calculate_fbol(key, magnitudes, reddening):
-    #TODO: De-redden the observations
+def calculate_fbol(key, magnitudes, av):
+    magnitudes = ccm89_deredden_magnitudes(key, magnitudes, av)
+    
     wavelength_array, flux_array = build_flux_wl_array(key, magnitudes)
     
     shortest_wl = np.amin(wavelength_array)
