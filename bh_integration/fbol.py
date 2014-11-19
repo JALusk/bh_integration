@@ -1,9 +1,9 @@
 import numpy as np
 from astropy import units as u
 import scipy.integrate as integrate
-from bh_integration.mag2flux import *
-from bh_integration.fqbol import integrate_fqbol
-from bh_integration.fit_blackbody import *
+from mag2flux import *
+from fqbol import integrate_fqbol
+from fit_blackbody import *
 
 def ccm89_deredden_magnitudes(key, magnitudes, av):
     mags_dereddened = np.array([])
@@ -57,12 +57,8 @@ def calculate_fbol(key, magnitudes, av):
     
     temperature, angular_radius = bb_fit_parameters(wavelength_array, 
                                                     flux_array)
-    ir_correction = calculate_ir_correction(bb_flux(wavelength, temperature,
-                                                    angular_radius),
-                                                    longest_wl)
-    uv_correction = calculate_uv_correction_using_blackbody(bb_flux(wavelength, 
-                                                            temperature, 
-                                                            angular_radius), 
-                                                            shortest_wl)
-    fbol = fqbol + ir_correction + uv_correction
+    ir_corr = ir_correction(temperature.value, angular_radius, longest_wl.value)[0]
+    uv_corr = uv_correction_blackbody(temperature.value, angular_radius, 
+                                            shortest_wl.value)[0]
+    fbol = fqbol.value + ir_corr + uv_corr
     return fbol
