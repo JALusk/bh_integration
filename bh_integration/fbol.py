@@ -3,17 +3,8 @@ from astropy import units as u
 import scipy.integrate as integrate
 from mag2flux import *
 from fqbol import integrate_fqbol
+from specutils import extinction
 from fit_blackbody import *
-
-def od94_deredden_magnitudes(key, magnitudes, av):
-    mags_dereddened = np.array([])
-    
-    for i, filter_band in enumerate(key):
-        filter_mean_extinction = get_filter_mean_extinction(filter_band)
-        dereddened_mag = magnitudes[i] - av * filter_mean_extinction
-        mags_dereddened = np.append(mags_dereddened, dereddened_mag)
-
-    return mags_dereddened
 
 def build_flux_wl_array(key, magnitudes):
     fluxes = np.array([])
@@ -46,9 +37,9 @@ def uv_correction_linear(shortest_wl, shortest_flux):
     return uv_correction
 
 def calculate_fbol(key, magnitudes, av):
-    magnitudes = od94_deredden_magnitudes(key, magnitudes, av)
-    
     wavelength_array, flux_array = build_flux_wl_array(key, magnitudes)
+
+    flux_array_unred = flux_array * extinction.reddening(wavelength_array, av, model='od94')
     
     shortest_wl = np.amin(wavelength_array)
     longest_wl = np.amax(wavelength_array)

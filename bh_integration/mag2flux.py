@@ -5,16 +5,6 @@ from yaml import load
 stream = file('filter_data.yaml', 'r')
 filter_data = load(stream)
 
-def get_filter_mean_extinction(filter_band):
-    if not isinstance(filter_band, str):
-        raise TypeError('filter_band must be StringType')
-    elif filter_band in filter_data:
-        mean_extinction = filter_data[filter_band]['mean_extinction']
-    else:
-        raise KeyError('Your specified filter (%s) is not available', filter_band)
-    return mean_extinction
-
-
 def get_filter_parameters(filter_band):
     """Fetches effective wavelength and flux zeropoint of a filter.
 

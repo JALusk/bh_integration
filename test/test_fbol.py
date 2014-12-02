@@ -10,7 +10,6 @@ class TestFbol(unittest.TestCase):
     
     def setUp(self):
         self.key = np.array(['U', 'B', 'V', 'R', 'I'])
-        self.mean_extinction = np.array([1.569, 1.337, 1.000, 0.751, 0.479])
         self.magnitudes = np.array([7.129, 5.554, 4.383, 3.917, 3.794])
         self.av = 0.435
         self.flux_array = u.Quantity([5.87565760e-12, 3.79417256e-11, 
@@ -20,20 +19,6 @@ class TestFbol(unittest.TestCase):
         self.eff_wl_array = u.Quantity([3660., 4380., 5450., 6410., 7980.],
                                         u.Angstrom)
     
-    def test_ccm89_deredden_magnitudes(self):
-        expected = np.array([])
-        for i, filter_band in enumerate(self.key):
-            dereddened_mag = self.magnitudes[i] - self.av * get_filter_mean_extinction(filter_band)
-            expected = np.append(expected, dereddened_mag)
-        result = ccm89_deredden_magnitudes(self.key, self.magnitudes, self.av)
-
-        self.assertEqual(expected.tolist(), result.tolist())
-
-    def test_ccm89_dereddens_to_flat_sed(self):
-        expected = np.array([0.0, 0.0, 0.0, 0.0, 0.0])
-        result = ccm89_deredden_magnitudes(self.key, self.av * self.mean_extinction, self.av)
-        self.assertEqual(expected.tolist(), result.tolist())
-
     def test_build_flux_wl_array_returns_correct_flux_array(self):
         expected = np.array([])
         for i, filter_band in enumerate(self.key):
