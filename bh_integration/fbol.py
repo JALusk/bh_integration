@@ -39,7 +39,7 @@ def uv_correction_linear(shortest_wl, shortest_flux):
 def calculate_fbol(key, magnitudes, av):
     wavelength_array, flux_array = build_flux_wl_array(key, magnitudes)
 
-    flux_array_unred = flux_array * extinction.reddening(wavelength_array, av, model='od94')
+    flux_array_unred = flux_array * extinction.reddening(wavelength_array, av, model='ccm89')
     
     shortest_wl = np.amin(wavelength_array)
     longest_wl = np.amax(wavelength_array)
