@@ -44,10 +44,10 @@ def calculate_fbol(key, magnitudes, av):
     shortest_wl = np.amin(wavelength_array)
     longest_wl = np.amax(wavelength_array)
 
-    fqbol = integrate_fqbol(wavelength_array, flux_array)
+    fqbol = integrate_fqbol(wavelength_array, flux_array_unred)
     
     temperature, angular_radius = bb_fit_parameters(wavelength_array, 
-                                                    flux_array)
+                                                    flux_array_unred)
     ir_corr = ir_correction(temperature.value, angular_radius, longest_wl.value)[0]
     uv_corr = uv_correction_blackbody(temperature.value, angular_radius, 
                                             shortest_wl.value)[0]

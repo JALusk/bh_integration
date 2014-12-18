@@ -29,7 +29,7 @@ class TestFbol(unittest.TestCase):
         result_wl_array, result_flux_array = build_flux_wl_array(self.key, 
                                                            self.magnitudes)
 
-        self.assertEqual(expected.tolist(), result_flux_array.tolist())
+        self.assertEqual(expected.value.tolist(), result_flux_array.value.tolist())
 
     def test_build_flux_wl_array_returns_correct_wl_array(self):
         expected = np.array([])
@@ -41,7 +41,7 @@ class TestFbol(unittest.TestCase):
         result_wl_array, result_flux_array = build_flux_wl_array(self.key, 
                                                            self.magnitudes)
 
-        self.assertEqual(expected.tolist(), result_wl_array.tolist())
+        self.assertEqual(expected.value.tolist(), result_wl_array.value.tolist())
 
     def test_integrate_fqbol_returns_correct_flux_value(self):
         expected = np.trapz(self.flux_array, self.eff_wl_array)
