@@ -1,5 +1,5 @@
 ## Description
-v0.1
+v0.2
 
 This code attempts to implement the photometric integration scheme of [Bersten & Hamuy (2009)](http://iopscience.iop.org/0004-637X/701/1/200).
 
@@ -49,7 +49,6 @@ This is the function called by the scipy.integrate.quad() routine during the cal
 
 ### ToDo:
 
-    1) De-reddening routine
-    2) Logic that picks which UV correction to use based on whether or not U lies below the BB fit
-    3) Docstrings for all functions
+    1) Logic that picks which UV correction to use based on whether or not U lies below the BB fit
+    2) Docstrings for all functions
 
