@@ -1,9 +1,10 @@
 import numpy as np
 from astropy import units as u
 import scipy.integrate as integrate
-from bh_integration.mag2flux import *
-from bh_integration.fqbol import integrate_fqbol
-from bh_integration.fit_blackbody import *
+from mag2flux import *
+from fqbol import integrate_fqbol
+from specutils import extinction
+from fit_blackbody import *
 
 def build_flux_wl_array(key, magnitudes):
     fluxes = np.array([])
@@ -35,23 +36,20 @@ def uv_correction_linear(shortest_wl, shortest_flux):
     uv_correction = np.trapz(fluxes, wavelengths)
     return uv_correction
 
-def calculate_fbol(key, magnitudes, reddening):
-    #TODO: De-redden the observations
+def calculate_fbol(key, magnitudes, av):
     wavelength_array, flux_array = build_flux_wl_array(key, magnitudes)
+
+    flux_array_unred = flux_array * extinction.reddening(wavelength_array, av, model='ccm89')
     
     shortest_wl = np.amin(wavelength_array)
     longest_wl = np.amax(wavelength_array)
 
-    fqbol = integrate_fqbol(wavelength_array, flux_array)
+    fqbol = integrate_fqbol(wavelength_array, flux_array_unred)
     
     temperature, angular_radius = bb_fit_parameters(wavelength_array, 
-                                                    flux_array)
-    ir_correction = calculate_ir_correction(bb_flux(wavelength, temperature,
-                                                    angular_radius),
-                                                    longest_wl)
-    uv_correction = calculate_uv_correction_using_blackbody(bb_flux(wavelength, 
-                                                            temperature, 
-                                                            angular_radius), 
-                                                            shortest_wl)
-    fbol = fqbol + ir_correction + uv_correction
+                                                    flux_array_unred)
+    ir_corr = ir_correction(temperature.value, angular_radius, longest_wl.value)[0]
+    uv_corr = uv_correction_blackbody(temperature.value, angular_radius, 
+                                            shortest_wl.value)[0]
+    fbol = fqbol.value + ir_corr + uv_corr
     return fbol

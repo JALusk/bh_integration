@@ -11,14 +11,14 @@ class TestFbol(unittest.TestCase):
     def setUp(self):
         self.key = np.array(['U', 'B', 'V', 'R', 'I'])
         self.magnitudes = np.array([7.129, 5.554, 4.383, 3.917, 3.794])
-        self.reddening = 0.0
+        self.av = 0.435
         self.flux_array = u.Quantity([5.87565760e-12, 3.79417256e-11, 
                                       6.40953095e-11, 5.90280490e-11, 
                                       3.41930932e-11], 
                                       u.erg / (u.Angstrom * u.cm**2 * u.s))
         self.eff_wl_array = u.Quantity([3660., 4380., 5450., 6410., 7980.],
                                         u.Angstrom)
-
+    
     def test_build_flux_wl_array_returns_correct_flux_array(self):
         expected = np.array([])
         for i, filter_band in enumerate(self.key):
@@ -29,7 +29,7 @@ class TestFbol(unittest.TestCase):
         result_wl_array, result_flux_array = build_flux_wl_array(self.key, 
                                                            self.magnitudes)
 
-        self.assertEqual(expected.tolist(), result_flux_array.tolist())
+        self.assertEqual(expected.value.tolist(), result_flux_array.value.tolist())
 
     def test_build_flux_wl_array_returns_correct_wl_array(self):
         expected = np.array([])
@@ -41,7 +41,7 @@ class TestFbol(unittest.TestCase):
         result_wl_array, result_flux_array = build_flux_wl_array(self.key, 
                                                            self.magnitudes)
 
-        self.assertEqual(expected.tolist(), result_wl_array.tolist())
+        self.assertEqual(expected.value.tolist(), result_wl_array.value.tolist())
 
     def test_integrate_fqbol_returns_correct_flux_value(self):
         expected = np.trapz(self.flux_array, self.eff_wl_array)
