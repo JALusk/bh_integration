@@ -6,19 +6,39 @@ from fqbol import integrate_fqbol
 from specutils import extinction
 from fit_blackbody import *
 
-def build_flux_wl_array(key, magnitudes):
+def build_flux_wl_array(key, magnitudes, uncertainties):
     fluxes = np.array([])
+    flux_uncertainties = np.array([])
     wavelengths = np.array([])
 
     for i, filter_band in enumerate(key):
-        flux, effective_wl = mag2flux(filter_band, magnitudes[i])
+        flux, flux_uncertainty, effective_wl = mag2flux(filter_band, magnitudes[i], uncertainties[i])
         fluxes = np.append(fluxes, flux)
+        flux_uncertainties = np.append(flux_uncertainties, flux_uncertainty)
         wavelengths = np.append(wavelengths, effective_wl)
 
-    return u.Quantity(wavelengths, effective_wl.unit), u.Quantity(fluxes, flux.unit)
+    return u.Quantity(wavelengths, effective_wl.unit), u.Quantity(fluxes, flux.unit), u.Quantity(flux_uncertainties, flux.unit)
 
-def integrate_fqbol(wavelength_array, flux_array):
-    return np.trapz(flux_array, wavelength_array)
+def integrate_fqbol(wavelengths, fluxes, flux_uncertainties):
+    fqbol = np.trapz(fluxes, wavelengths)
+
+    quad_terms = np.array([])
+
+    for i, uncertainty in enumerate(flux_uncertainties):
+        if i == 0:
+            term = 0.5 * (wavelengths[i+1] - wavelengths[i]) * uncertainty
+            quad_terms = np.append(quad_terms, term)
+        elif i == len(flux_uncertainties) - 1:
+            term = 0.5 * (wavelengths[i] - wavelengths[i-1]) * uncertainty
+            quad_terms = np.append(quad_terms, term)
+        else:
+            term = 0.5 * (wavelengths[i+1] - wavelengths[i-1]) * uncertainty
+            quad_terms = np.append(quad_terms, term)
+    fqbol_uncertainty = np.sqrt(np.sum(x*x for x in quad_terms))
+
+    fqbol_uncertainty = u.Quantity(fqbol_uncertainty, fqbol.unit)
+
+    return fqbol, fqbol_uncertainty
 
 def ir_correction(temperature, angular_radius, longest_wl):
     ir_correction = integrate.quad(bb_flux_nounits, longest_wl, np.inf,
@@ -36,20 +56,30 @@ def uv_correction_linear(shortest_wl, shortest_flux):
     uv_correction = np.trapz(fluxes, wavelengths)
     return uv_correction
 
-def calculate_fbol(key, magnitudes, av):
-    wavelength_array, flux_array = build_flux_wl_array(key, magnitudes)
+def calculate_fbol(key, magnitudes, uncertainties, av):
+    wavelengths, fluxes, flux_uncertainties = build_flux_wl_array(key, magnitudes, uncertainties)
 
-    flux_array_unred = flux_array * extinction.reddening(wavelength_array, av, model='ccm89')
+    fluxes_unred = fluxes * extinction.reddening(wavelengths, av, model='ccm89')
     
-    shortest_wl = np.amin(wavelength_array)
-    longest_wl = np.amax(wavelength_array)
+    shortest_wl = np.amin(wavelengths)
+    longest_wl = np.amax(wavelengths)
 
-    fqbol = integrate_fqbol(wavelength_array, flux_array_unred)
+    fqbol, fqbol_uncertainty = integrate_fqbol(wavelengths, fluxes_unred, flux_uncertainties)
     
-    temperature, angular_radius = bb_fit_parameters(wavelength_array, 
-                                                    flux_array_unred)
-    ir_corr = ir_correction(temperature.value, angular_radius, longest_wl.value)[0]
-    uv_corr = uv_correction_blackbody(temperature.value, angular_radius, 
-                                            shortest_wl.value)[0]
+    temperature, angular_radius, chisq = bb_fit_parameters(wavelengths, 
+                                                    fluxes_unred, flux_uncertainties)
+    ndof = len(fluxes) - 2
+    reduced_chisq = chisq / ndof
+
+    ir_values = ir_correction(temperature.value, angular_radius, longest_wl.value)
+    ir_corr = ir_values[0]
+    ir_corr_uncertainty = ir_values[1]
+    uv_values = uv_correction_blackbody(temperature.value, angular_radius, 
+                                            shortest_wl.value)
+    uv_corr = uv_values[0]
+    uv_corr_uncertainty = uv_values[1]
+
     fbol = fqbol.value + ir_corr + uv_corr
-    return fbol
+    fbol_uncertainty = np.sqrt(np.sum(x*x for x in [fqbol_uncertainty.value, ir_corr_uncertainty, uv_corr_uncertainty]))
+
+    return fbol, fbol_uncertainty
