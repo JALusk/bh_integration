@@ -35,7 +35,7 @@ def get_filter_parameters(filter_band):
 
     return effective_wl, flux_at_zero_mag
 
-def mag2flux(filter_band, magnitude):
+def mag2flux(filter_band, magnitude, uncertainty):
     """Converts an observed magnitude in a filter band to an average flux.
 
     Args:
@@ -43,12 +43,13 @@ def mag2flux(filter_band, magnitude):
         magnitude: FloatType - Apparent magnitude in the filter band.
 
     Returns:
-        a tuple of two astropy quantities, the flux in erg/s/cm^2/A. and
-        the effective wavelength of the filter in Angstrom
+        a tuple of three astropy quantities, the flux in erg/s/cm^2/A, the flux uncertainty 
+        in erg/s/cm^2/A, and the effective wavelength of the filter in Angstrom.
 
-        (flux, effective_wl)
+        (flux, flux_uncertainty, effective_wl)
     """
     effective_wl, flux_at_zero_mag = get_filter_parameters(filter_band)
     flux = flux_at_zero_mag * 10**(-0.4 * magnitude)
+    flux_uncertainty = np.abs(flux * -0.4 * np.log(10) * uncertainty)
 
-    return flux, effective_wl
+    return flux, flux_uncertainty, effective_wl
