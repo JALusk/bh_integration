@@ -1,9 +1,5 @@
 import numpy as np
 from astropy import units as u
-from yaml import load
-
-stream = file('filter_data.yaml', 'r')
-filter_data = load(stream)
 
 def get_filter_parameters(filter_band):
     """Fetches effective wavelength and flux zeropoint of a filter.
@@ -35,21 +31,26 @@ def get_filter_parameters(filter_band):
 
     return effective_wl, flux_at_zero_mag
 
-def mag2flux(filter_band, magnitude, uncertainty):
+def mag2flux(magnitude, uncertainty, effective_wl, flux_at_zero_mag):
     """Converts an observed magnitude in a filter band to an average flux.
 
     Args:
-        filter_band: StringType - Name of the filter band (ex: 'U').
-        magnitude: FloatType - Apparent magnitude in the filter band.
+        magnitude: FloatType - Apparent magnitude.
+        uncertainty: FloatType - Apparent magnitude uncertainty.
+        effective_wl: FloatType - Effective wavelength of the filter.
+        flux_at_zero_mag: FloatType - Flux at zero magnitude of the filter.
 
     Returns:
-        a tuple of three astropy quantities, the flux in erg/s/cm^2/A, the flux uncertainty 
-        in erg/s/cm^2/A, and the effective wavelength of the filter in Angstrom.
+        a tuple of two astropy quantities:
+            * the flux in erg/s/cm^2/A, 
+            * the flux uncertainty in erg/s/cm^2/A
 
         (flux, flux_uncertainty, effective_wl)
     """
-    effective_wl, flux_at_zero_mag = get_filter_parameters(filter_band)
+    effective_wl = effective_wl * u.AA
+    flux_at_zero_mag = flux_at_zero_mag * (u.erg / (u.s * u.cm**2 * u.AA)) 
+   
     flux = flux_at_zero_mag * 10**(-0.4 * magnitude)
     flux_uncertainty = np.abs(flux * -0.4 * np.log(10) * uncertainty)
 
-    return flux, flux_uncertainty, effective_wl
+    return flux.value, flux_uncertainty.value

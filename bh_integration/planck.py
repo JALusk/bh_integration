@@ -22,4 +22,4 @@ def planck_function(wavelength, temperature):
                (np.exp(C2 / (wavelength * temperature)) - 1) / u.sr
     B_lambda = B_lambda.to(u.erg / (u.s * u.cm**2 * u.AA * u.sr))
 
-    return B_lambda
+    return B_lambda.value

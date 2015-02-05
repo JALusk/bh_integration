@@ -17,7 +17,7 @@ def build_flux_wl_array(key, magnitudes, uncertainties):
         flux_uncertainties = np.append(flux_uncertainties, flux_uncertainty)
         wavelengths = np.append(wavelengths, effective_wl)
 
-    return u.Quantity(wavelengths, effective_wl.unit), u.Quantity(fluxes, flux.unit), u.Quantity(flux_uncertainties, flux.unit)
+    return wavelengths, fluxes, flux_uncertainties
 
 def integrate_fqbol(wavelengths, fluxes, flux_uncertainties):
     fqbol = np.trapz(fluxes, wavelengths)
@@ -36,7 +36,7 @@ def integrate_fqbol(wavelengths, fluxes, flux_uncertainties):
             quad_terms = np.append(quad_terms, term)
     fqbol_uncertainty = np.sqrt(np.sum(x*x for x in quad_terms))
 
-    fqbol_uncertainty = u.Quantity(fqbol_uncertainty, fqbol.unit)
+    fqbol_uncertainty = fqbol_uncertainty
 
     return fqbol, fqbol_uncertainty
 
@@ -51,8 +51,8 @@ def uv_correction_blackbody(temperature, angular_radius, shortest_wl):
     return uv_correction
 
 def uv_correction_linear(shortest_wl, shortest_flux):
-    fluxes = u.Quantity([0.0, shortest_wl.value], shortest_wl.unit)
-    wavelengths = u.Quantity([0.0, shortest_flux.value], shortest_flux.unit)
+    fluxes = [0.0, shortest_wl]
+    wavelengths = [0.0, shortest_flux]
     uv_correction = np.trapz(fluxes, wavelengths)
     return uv_correction
 
@@ -74,12 +74,12 @@ def calculate_fbol(key, magnitudes, uncertainties, av):
     ir_values = ir_correction(temperature.value, angular_radius, longest_wl.value)
     ir_corr = ir_values[0]
     ir_corr_uncertainty = ir_values[1]
-    uv_values = uv_correction_blackbody(temperature.value, angular_radius, 
-                                            shortest_wl.value)
+    uv_values = uv_correction_blackbody(temperature, angular_radius, 
+                                            shortest_wl)
     uv_corr = uv_values[0]
     uv_corr_uncertainty = uv_values[1]
 
     fbol = fqbol.value + ir_corr + uv_corr
-    fbol_uncertainty = np.sqrt(np.sum(x*x for x in [fqbol_uncertainty.value, ir_corr_uncertainty, uv_corr_uncertainty]))
+    fbol_uncertainty = np.sqrt(np.sum(x*x for x in [fqbol_uncertainty, ir_corr_uncertainty, uv_corr_uncertainty]))
 
     return fbol, fbol_uncertainty
