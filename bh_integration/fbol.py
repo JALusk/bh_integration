@@ -2,7 +2,6 @@ import numpy as np
 from astropy import units as u
 import scipy.integrate as integrate
 from mag2flux import *
-from fqbol import integrate_fqbol
 from specutils import extinction
 from fit_blackbody import *
 
