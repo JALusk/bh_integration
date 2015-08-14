@@ -42,7 +42,7 @@ class TestFitBlackbody(unittest.TestCase):
         self.assertEqual(expected.value, result)
 
     def test_bb_fit_parameters_returns_expected_parameters(self):
-        popt, pcov = curve_fit(bb_flux, self.eff_wl_array, self.flux_array,
+        popt, pcov = curve_fit(bb_flux_nounits, self.eff_wl_array, self.flux_array,
                                p0=[5000, 1.0e-10])
         expected_temp = u.Quantity(popt[0], unit=u.K)
         expected_radius = popt[1]
